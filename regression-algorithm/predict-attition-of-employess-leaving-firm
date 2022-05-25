@@ -1,0 +1,186 @@
+import pandas as pd
+
+my_data = pd.read_csv('WA_Fn-UseC_-HR-Employee-Attrition.csv')
+remove_col = my_data.pop('Attrition')
+my_data.insert(34, 'Attrition', remove_col)
+
+my_data.head()
+
+# converting categotical features to numeric using LabelEncoder() for data transformation
+
+from sklearn.preprocessing import LabelEncoder
+le = LabelEncoder()
+
+data = my_data
+data['BusinessTravel'] = le.fit_transform(data['BusinessTravel'])
+data['Department'] = le.fit_transform(data['Department'])
+data['EducationField'] = le.fit_transform(data['EducationField'])
+data['Gender'] = le.fit_transform(data['Gender'])
+data['JobRole'] = le.fit_transform(data['JobRole'])
+data['MaritalStatus'] = le.fit_transform(data['MaritalStatus'])
+data['Over18'] = le.fit_transform(data['Over18'])
+data['OverTime'] = le.fit_transform(data['OverTime'])
+data['Attrition'] = le.fit_transform(data['Attrition'])
+
+# data transformation using scikit learn MinMaxScaler to Rescale
+
+from pandas import read_csv
+from numpy import set_printoptions
+from sklearn.preprocessing import MinMaxScaler
+
+filename = 'WA_Fn-UseC_-HR-Employee-Attrition.csv'
+
+array = data.values
+x = array[:, : 34]
+y = array[:, 34]
+
+model = MinMaxScaler(feature_range= (0, 1))
+rescaledx = model.fit_transform(x)
+
+set_printoptions(precision= 3)
+print(rescaledx[0:3, :])
+
+rescaledx_data = pd.DataFrame(rescaledx)
+rescaledx_data.columns = ['Age', 'BusinessTravel', 'DailyRate', 'Department',
+       'DistanceFromHome', 'Education', 'EducationField', 'EmployeeCount',
+       'EmployeeNumber', 'EnvironmentSatisfaction', 'Gender', 'HourlyRate',
+       'JobInvolvement', 'JobLevel', 'JobRole', 'JobSatisfaction',
+       'MaritalStatus', 'MonthlyIncome', 'MonthlyRate', 'NumCompaniesWorked',
+       'Over18', 'OverTime', 'PercentSalaryHike', 'PerformanceRating',
+       'RelationshipSatisfaction', 'StandardHours', 'StockOptionLevel',
+       'TotalWorkingYears', 'TrainingTimesLastYear', 'WorkLifeBalance',
+       'YearsAtCompany', 'YearsInCurrentRole', 'YearsSinceLastPromotion',
+       'YearsWithCurrManager']
+
+rescaledx_data['Attrition'] = data['Attrition']
+rescaledx_data.head() 
+
+# Univeriate selection
+from numpy import set_printoptions
+from sklearn.feature_selection import SelectKBest
+from sklearn.feature_selection import chi2
+
+filename = 'WA_Fn-UseC_-HR-Employee-Attrition.csv'
+
+array = rescaledx_data.values
+x = array[:, : 34]
+y = array[:, 34]
+
+test = SelectKBest(score_func=chi2, k=20)
+fit = test.fit(x, y)
+
+set_printoptions(precision = 3)
+print(fit.scores_)
+features = fit.transform(x)
+# print(features[0:2, :])
+
+dfeature = pd.DataFrame(features, columns=['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t'])
+
+col_dict = dict()
+cols = list(rescaledx_data.columns)[0:-1]
+
+for col in cols:
+    dcol = rescaledx_data[col].values.tolist()
+    col_dict[col] = dcol
+    
+count = 0
+col_len = len(dfeature.columns.tolist())
+
+while count < col_len:
+    col_label = ''
+    if count == 0:
+        col_label = 'a'
+    elif count == 1:
+        col_label = 'b'
+    elif count == 2:
+        col_label = 'c'
+    elif count == 3:
+        col_label = 'd'
+    elif count == 4:
+        col_label = 'e'
+    elif count == 5:
+        col_label = 'f'
+    elif count == 6:
+        col_label = 'g'
+    elif count == 7:
+        col_label = 'h'
+    elif count == 8:
+        col_label = 'i'
+    elif count == 9:
+        col_label = 'j'
+    elif count == 10:
+        col_label = 'k'
+    elif count == 11:
+        col_label = 'l'
+    elif count == 12:
+        col_label = 'm'
+    elif count == 13:
+        col_label = 'n'
+    elif count == 14:
+        col_label = 'o'
+    elif count == 15:
+        col_label = 'p'
+    elif count == 16:
+        col_label = 'q'
+    elif count == 17:
+        col_label = 'r'
+    elif count == 18:
+        col_label = 's'
+    elif count == 19:
+        col_label = 't'
+    else:
+        pass
+
+    coldata = dfeature.loc[:, col_label]
+    coldatav = list(coldata.values)
+
+    for item in col_dict.items():
+        if coldatav == item[1]:
+            print('label is', item[0])
+        
+    count += 1
+
+dataframe = rescaledx_data.loc[:,['Attrition','DistanceFromHome','Education','EmployeeNumber','Gender','JobLevel','JobRole','MaritalStatus',
+ 'MonthlyIncome','MonthlyRate','NumCompaniesWorked','OverTime','PerformanceRating','RelationshipSatisfaction',
+ 'StockOptionLevel','TotalWorkingYears','YearsAtCompany','YearsInCurrentRole','YearsSinceLastPromotion',
+ 'YearsWithCurrManager','Age']]
+
+ # Linear Classification
+
+import numpy as np
+from sklearn.model_selection import KFold
+from sklearn.model_selection import cross_val_score
+
+from sklearn.model_selection import cross_val_predict
+from sklearn.metrics import confusion_matrix
+from sklearn.linear_model import LogisticRegression
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+
+# non-linear ML
+
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.svm import SVC
+
+algorithms = {'GaussianNB':GaussianNB, 'LogisticRegression':LogisticRegression, 'LDA':LinearDiscriminantAnalysis,
+              'KNN':KNeighborsClassifier, 'DecisionTreeClassifier':DecisionTreeClassifier, 'SVC':SVC}
+
+def res(x, y, alg, cv):
+    model = alg()
+    resp = cross_val_score(model, x, y, cv=cv)
+    return resp
+    
+array = dataframe.values
+x, y = array[:, : 20], array[:, 20]
+
+cv = KFold(n_splits= 10)
+
+algoResList = []
+for name, algos in algorithms.items():
+    result = res(x, y, algos, cv)
+    output = [name, np.mean(result)]
+    algoResList.append(output)
+
+algoResults = pd.DataFrame(algoResList, columns = ['Algorithm', 'Score'])
+
